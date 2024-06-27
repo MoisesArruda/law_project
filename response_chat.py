@@ -28,7 +28,7 @@ def bedrock_summarizacao(userInput):
                     aws_secret_access_key=os.getenv("AWS_SECRET_KEY")
                                 )
     
-    template = """Responda sempre em português. Sua função é summarizar este texto de forma que os principais pontos sejam abordados e o entendimento seja claro    
+    template = """Responda sempre em português. Sua função é resumir textos apenas destacando os principais pontos e explicando toda a situação envolvida e o entendimento seja claro    
     Texto: {Texto}"""
     prompt_final = template.replace("{Texto}",userInput)
 
@@ -50,8 +50,8 @@ def bedrock_classificacao(userInput):
                     aws_secret_access_key=os.getenv("AWS_SECRET_KEY")
                                 )
     
-    template = """Responda em português. Faca uma resposta objetiva, Voce vai receber uma texto de defesa de um advogado para seu cliente.\n    Sua funcao é apenas CLASSIFICAR o conteudo do texto de acordo com as seguintes opçoes e retornar APENAS um dos seguintes: \n        'Pensão Alimenticia'\n        'Guarda Compartilhada'\n        'Guarda Unilateral'\n  'Regulamentação de visitar'\n
-Não é necessário retornar uma explicação, um resumo ou algo relacionado, apenas a classificação"""
+    template = """Responda em português. Faca uma resposta objetiva, Voce vai receber uma textos de processos.\n    Sua funcao é apenas CLASSIFICAR o conteudo do texto de acordo com as seguintes opçoes e retornar APENAS um dos seguintes: \n        'Pensão Alimenticia'\n        'Guarda Compartilhada'\n        'Guarda Unilateral'\n  'Regulamentação de visitar'\n
+Não é necessário retornar uma explicação, resumo ou qualquer texto, apenas a classificação do tipo de processo"""
 
     body = {"prompt": template,"temperature": 0.0}
     model_id= "mistral.mistral-7b-instruct-v0:2"

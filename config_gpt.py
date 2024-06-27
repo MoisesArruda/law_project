@@ -78,8 +78,8 @@ class Prompt:
     def create_prompt(self):
         
         """Cria o prompt a partir do template."""  
-        template = """Responda sempre em português. Você ira receber uma formulação de um texto de um processo de um advogado para seu cliente.\n
-                Sua funcao é melhorar ou modificar adequadamente o texto respeitando o contexto judicial da ocasião.
+        template = """Responda sempre em português. Você ira receber um texto de um processo judicial.\n
+                Sua funcao é auxiliar o advogado e melhorar ou modificar adequadamente o texto respeitando o contexto judicial da ocasião .
         Chat_history = {chat_history}
         Human: {query}
         Answer:"""

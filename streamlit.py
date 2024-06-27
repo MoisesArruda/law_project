@@ -1,6 +1,7 @@
 # Documentação completa pode ser encontrada aqui: https://catalog.workshops.aws/building-with-amazon-bedrock/en-US/intermediate/bedrock-rag-chatbot
 
 import streamlit as st
+
 from front.vars import *
 from response_chat import gpt_response,bedrock_summarizacao,bedrock_classificacao
 from config_gpt import GPTConfig,Prompt,Memory
@@ -48,11 +49,18 @@ def glossary():
 
 def chat_history():
 
-    if "messages" not in st.session_state.keys(): # Verifique de o histórico de mensagens ainda não foi criado.
+    if "messages" not in st.session_state: # Verifique de o histórico de mensagens ainda não foi criado.
         st.session_state.messages=[ # Inicie o histórico de mensagem.
-            {"role":"assistant","content": "Olá! Como posso te ajudar?"}
+            {"role":"assistant","content": "Olá! Como posso te ajudar? \n \
+             Escola sua opção: \n \
+                1 - formulacao \n \
+             2 - Summarizacao \n \
+             3 - Classificacaoo"}
     ]
         print(st.session_state.messages,": Inicio")
+
+    if "llm_choice" not in st.session_state:
+        st.session_state.llm_choice = None
 
     for message in st.session_state.messages: # Loop pelo histórico de bate-papo
         with st.chat_message(message["role"]): # Renderiza uma linha de chat para a função determinada, contendo tudo no bloco with
@@ -69,34 +77,77 @@ def chat_history():
         with st.chat_message("user"): # Exiba uma mensagem de bate-papo do usuário
             st.write(user_prompt) # Mostre a última mensagem do usuário
 
-    if st.session_state.messages[-1]["role"] != "assistant":
-        print(st.session_state.messages,": -1")
-        with st.chat_message("assistant"): # Mostre uma nova mensagem do bot
-            with st.spinner("Loading..."):
-
-                opcoes = ["formulacao","summarizacao","classificacao"]
-                if user_prompt in opcoes[0]:
-
-                    # st.write("Opcao formulação")
-                    ai_response = gpt_response(query=user_prompt)
+        # Se a escolha do LLM ainda não foi feita, determine qual LLM usar
+        if st.session_state.llm_choice is None:
+            opcoes = ["formulacao","summarizacao","classificacao"]
+            if user_prompt in opcoes:
+                st.session_state.llm_choice = user_prompt
+                ai_response = f"Opção {user_prompt}, forneça seu texto."
+                st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                with st.chat_message("assistant"):
                     st.write(ai_response)
-                    # st.session_state.messages.append({"role":"assistant","content":ai_response)
-                    # return ai_response
+
+            else:
+                ai_response = "Opção inválida. Por favor, escolha entre: formulacao, summarizacao, classificacao."
+                st.session_state.messages.append({"role": "assistant", "content": ai_response})
+                with st.chat_message("assistant"):
+                    st.write(ai_response)
+        else:
+            # Chame a função de resposta apropriada com base na escolha do LLM
+            if st.session_state.llm_choice == "formulacao":
+                ai_response = gpt_response(user_prompt)
+            elif st.session_state.llm_choice == "summarizacao":
+                ai_response = bedrock_summarizacao(user_prompt)
+            elif st.session_state.llm_choice == "classificacao":
+                ai_response = bedrock_classificacao(user_prompt)
+
+            # Garantindo a imagem de robo
+            with st.chat_message("assistant"):
+                # Enviando a resposta para o front
+                st.write(ai_response)
+                # Armazenando a resposta no histórico
+            st.session_state.messages.append({"role": "assistant", "content": ai_response})
 
 
-                elif user_prompt in opcoes[1]:
+    # # Se a última mensagem não for do assistente, prossiga
+    # if st.session_state.messages[-1]["role"] != "assistant":
+    #     print(st.session_state.messages,": -1")
+    #     with st.chat_message("assistant"): # Mostre uma nova mensagem do bot
+    #         with st.spinner("Loading..."):
+
+    #             opcoes = ["formulacao","summarizacao","classificacao"]
+    #             if user_prompt in opcoes[0]:
+
+    #                 ai_response= "Opcao formulação, forneça seu texto."
+    #                 st.write(ai_response)
+    #                 # Adicione a resposta do assistente ao histórico
+    #                 st.session_state.messages.append({"role":"assistant","content":ai_response})
+
+    #                 # Caixa de entrada adicional para o usuário fornecer o texto para a LLM
+    #                 user_text = st.text_input("Insira seu texto para a formulação")
+
+    #                 if user_text:
+
+    #                     ai_response = gpt_response(query=user_text)
+    #                     st.write(ai_response)
+    #                     st.session_state.messages.append({"role": "assistant", "content": ai_response})
+    #                 # st.session_state.messages.append({"role":"assistant","content":ai_response)
+    #                 # return ai_response
+
+
+    #             elif user_prompt in opcoes[1]:
                 
-                    # st.write("Opção summarizacão")
-                    ai_response = bedrock_summarizacao(user_prompt)
-                    st.write(ai_response)
-                    # st.session_state.messages.append(ai_response)
-                    # return ai_response
+    #                 st.write("Opção summarizacão")
+    #                 ai_response = bedrock_summarizacao(user_prompt)
+    #                 st.write(ai_response)
+    #                 # st.session_state.messages.append(ai_response)
+    #                 # return ai_response
             
-                elif user_prompt in opcoes[2]:  
+    #             elif user_prompt in opcoes[2]:  
 
-                    #st.write("Opção classificacao")
-                    ai_response = bedrock_classificacao(user_prompt)
-                    st.write(ai_response)
+    #                 #st.write("Opção classificacao")
+    #                 ai_response = bedrock_classificacao(user_prompt)
+    #                 st.write(ai_response)
                     # st.session_state.messages.append(ai_response)
                     # return ai_response
 
@@ -107,9 +158,9 @@ def chat_history():
 
          
 
-        new_ai_message = {"role":"assistant","content":ai_response}
-        st.session_state.messages.append(new_ai_message)
-        print(st.session_state.messages,": final")
+        # new_ai_message = {"role":"assistant","content":ai_response}
+        # st.session_state.messages.append(new_ai_message)
+        # print(st.session_state.messages,": final")
 
 if __name__ == "__main__":
 
