@@ -18,7 +18,7 @@ def configure_page_init():
     # Definindo a cor de fundo e borda para st.session_state.messages
     st.markdown(page_pgt,unsafe_allow_html=True)
     #setando o fundo da aba ajuda e da página principal
-    path = "data/Screenshot_207.png"
+    path = "data/logo-default-143x27.png"
     st.image(path,width=900)#, use_column_width=True)
 
     with st.sidebar:
