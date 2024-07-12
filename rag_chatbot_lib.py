@@ -25,29 +25,36 @@ def get_llm():
     return llm
 
 
-def get_index(): #creates and returns an in-memory vector store to be used in the application
+def get_index(): 
+    # Cria e retorna um armazenamento de vetores na memória para ser usado na aplicação
     
-    embeddings = BedrockEmbeddings() #create a Titan Embeddings client
+    embeddings = BedrockEmbeddings() # Cria um cliente de Embeddings Titan
     
-    pdf_path = "data/Docker_para_desenvolvedores.pdf" #assumes local PDF file with this name
+    pdf_path = "data/Docker_para_desenvolvedores.pdf" 
 
-    loader = PyPDFLoader(file_path=pdf_path) #load the pdf file
+    loader = PyPDFLoader(file_path=pdf_path) 
     
-    text_splitter = RecursiveCharacterTextSplitter( #create a text splitter
-        separators=["\n\n", "\n", ".", " "], #split chunks at (1) paragraph, (2) line, (3) sentence, or (4) word, in that order
-        chunk_size=1000, #divide into 1000-character chunks using the separators above
-        chunk_overlap=100 #number of characters that can overlap with previous chunk
+    text_splitter = RecursiveCharacterTextSplitter( 
+        # Cria um divisor de texto
+        separators=["\n\n", "\n", ".", " "], 
+        # Divide os chunks em (1) parágrafo, (2) linha, (3) sentença ou (4) palavra, nesta ordem
+        chunk_size=1000, 
+        # Divide em chunks de 1000 caracteres usando os separadores acima
+        chunk_overlap=100 
+        # Número de caracteres que podem se sobrepor com o chunk anterior
     )
     
-    index_creator = VectorstoreIndexCreator( #create a vector store factory
-        vectorstore_cls=FAISS, #use an in-memory vector store for demo purposes
+    index_creator = VectorstoreIndexCreator( 
+        # Cria uma fábrica de armazenamento de vetores
+        vectorstore_cls=FAISS, 
+        # Usa um armazenamento de vetores na memória para fins de demonstração
         embedding=embeddings, #use Titan embeddings
-        text_splitter=text_splitter, #use the recursive text splitter
+        text_splitter=text_splitter,  # Usa o divisor de texto recursivo
     )
     
-    index_from_loader = index_creator.from_loaders([loader]) #create an vector store index from the loaded PDF
+    index_from_loader = index_creator.from_loaders([loader]) # Cria um índice de armazenamento de vetores a partir do PDF carregado
     
-    return index_from_loader #return the index to be cached by the client app
+    return index_from_loader  # Retorna o índice para ser armazenado em cache pela aplicação cliente
 
 
 def get_memory(): #create memory for this chat session
@@ -57,13 +64,13 @@ def get_memory(): #create memory for this chat session
     return memory
 
 
-def get_rag_chat_response(input_text, memory, index): #chat client function
+def get_rag_chat_response(input_text, memory, index):
     
     llm = get_llm()
     
     conversation_with_retrieval = ConversationalRetrievalChain.from_llm(llm, index.vectorstore.as_retriever(), memory=memory, verbose=True)
     
-    chat_response = conversation_with_retrieval.invoke({"question": input_text}) #pass the user message and summary to the model
+    chat_response = conversation_with_retrieval.invoke({"question": input_text}) # Passa a mensagem do usuário e o resumo para o modelo
     
     return chat_response['answer']
 

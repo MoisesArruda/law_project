@@ -16,9 +16,9 @@ if 'chat_history' not in st.session_state: #see if the chat history hasn't been 
 
 if 'vector_index' not in st.session_state: #see if the vector index hasn't been created yet
     
-    with st.spinner("Indexing document..."): #show a spinner while the code in this with block runs
-        st.session_state.vector_index = glib.get_index() #retrieve the index through the supporting library and store in the app's session cache
-    print("Isso é o vector_index",st.session_state['vector_index'])
+    with st.spinner("Indexing document..."): # Mostra um spinner enquanto o código neste bloco with é executado
+        st.session_state.vector_index = glib.get_index() # Recupera o índice através da biblioteca de suporte e armazena no cache de sessão do aplicativo
+        print("Isso é o vector_index",st.session_state['vector_index'])
 
 #Re-render the chat history (Streamlit re-runs this script, so need this to preserve previous chat messages)
 for message in st.session_state.chat_history: #loop through the chat history
