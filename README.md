@@ -12,7 +12,7 @@ Moisés Arruda
 
 ### Scripts:
 
-Os scripts **chatbot_app** e **chatbot_lib** estão configurados para que se possa trabalhar com a memoria integrada. Ele está respondendo bem.
+Os scripts **chatbot_app** e **chatbot_lib** estão configurados para que se possa trabalhar com a memoria integrada. Ele está respondendo bem. Tirei as informações [deste link](https://catalog.workshops.aws/building-with-amazon-bedrock/en-US/intermediate/bedrock-rag-chatbot#run-the-streamlit-app)
 
 Os scripts **rag_chatbot_app** e **rag_chatbot_lib** estão buscando um índice vetorial para iniciar o projeto, e dessa forma poder iniciar a conversa e armazenar a memória.
 
