@@ -7,6 +7,7 @@ from response_chat import gpt_response,bedrock_summarizacao,bedrock_classificaca
 from config_gpt import GPTConfig,Prompt,Memory
 from aws.conn_bedrock import *
 from langchain.chains import LLMChain
+import rag_chatbot_lib as glib #reference to local lib script
 
 def configure_page_init():
 
@@ -48,6 +49,9 @@ def glossary():
 
 
 def chat_history():
+
+    if 'memory' not in st.session_state:
+        st.session_state.memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True) #Maintains a history of previous messages
 
     if "messages" not in st.session_state: # Verifique de o histórico de mensagens ainda não foi criado.
         st.session_state.messages=[ # Inicie o histórico de mensagem.
